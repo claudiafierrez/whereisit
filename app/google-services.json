@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "634562704680",
+    "project_id": "whereisit-finalproject",
+    "storage_bucket": "whereisit-finalproject.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634562704680:android:4dc4fc84e30bd645d2cc1d",
+        "android_client_info": {
+          "package_name": "com.uoc.whereisitproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZDh9iHuKIrXMqFIbPNIuSE4CGtZmOm-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

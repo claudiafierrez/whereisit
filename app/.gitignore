@@ -1,0 +1,6 @@
+# Gradle / builds
+.gradle/
+build/
+
+# Local config (API keys, rutas locales)
+local.properties
