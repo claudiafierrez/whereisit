@@ -1,47 +1,56 @@
 package com.uoc.whereisitproject
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.compose.runtime.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.uoc.whereisitproject.ui.theme.WhereIsItProjectTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        installSplashScreen()
+
+        super.onCreate(savedInstanceState)
+
         //Initialize Firebase
         FirebaseApp.initializeApp(this)
 
-        // Splash screen
-        val splashScreen = installSplashScreen()
-
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        var isLoading by mutableStateOf(true)
-
-        splashScreen.setKeepOnScreenCondition { isLoading }
-
-        // Charge simulation (2 sec)
-        android.os.Handler(mainLooper).postDelayed({
-            isLoading = false
-        }, 2000)
 
         //val meta = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
         //Log.d("TFG", "MAPS KEY: ${meta.getString("com.google.android.geo.API_KEY")}")
 
         setContent {
             WhereIsItProjectTheme {
-                if (isLoading) {
-                    // API shows splash automatically
-                } else {
-                    LoginScreen()
+
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(
+                            onNavigateToRegister = { navController.navigate("register") },
+                            onLoginSuccess = {
+                                navController.navigate("home") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    composable("register") {
+                        RegisterScreen(onNavigateBack = { navController.popBackStack() })
+                    }
+                    composable("home") {
+                        ListScreen() // Main screen
+                    }
                 }
+
             }
         }
     }

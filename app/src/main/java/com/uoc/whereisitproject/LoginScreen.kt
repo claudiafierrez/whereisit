@@ -1,6 +1,7 @@
 package com.uoc.whereisitproject
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -11,13 +12,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
 
     var email by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
     var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val auth = FirebaseAuth.getInstance()
+    //val db = FirebaseFirestore.getInstance()
 
     Column(
         modifier = Modifier
@@ -26,7 +36,6 @@ fun LoginScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         // Logo
         Image(
             painter = painterResource(id = R.drawable.logo),
@@ -39,12 +48,29 @@ fun LoginScreen() {
         // Input email
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
+                    "Invalid email format"
+                } else null
+
+            },
             label = { Text("Email") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            isError = emailError != null
         )
+
+        emailError?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.align(Alignment.Start)
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -62,20 +88,45 @@ fun LoginScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* TODO: login logic */ },
+            onClick = {
+                isLoading = true
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnSuccessListener {
+                        isLoading = false
+                        onLoginSuccess()
+                    }
+                    .addOnFailureListener {
+                        isLoading = false
+                        errorMessage = it.message
+                    }
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black,   // color de fondo
-                contentColor = Color.White            // color del texto/iconos
+                containerColor = Color.Black, // background color
+                contentColor = Color.White // text color
             )
         ) {
             Text("Log in")
         }
 
+        errorMessage?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = it, color = Color.Red)
+        }
+
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Are you new? Sign in"
-        )
+        Row {
+            Text(text = "Are you new? ")
+            Text(
+                text = "Sign up",
+                color = Color.Blue,
+                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.clickable { onNavigateToRegister() }
+            )
+        }
+
     }
 }
