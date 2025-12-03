@@ -56,7 +56,6 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
         selectedImageUri = uri
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,8 +85,8 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
         Button(
             onClick = { imagePickerLauncher.launch("image/*") },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Gray, // Fondo gris
-                contentColor = Color.White   // Texto blanco
+                containerColor = Color.Gray, // background
+                contentColor = Color.White   // Texto text
             )
 
         ) {
@@ -144,7 +143,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                                 db.collection("users").document(userId).set(userData)
                                     .addOnSuccessListener {
                                         isLoading = false
-                                        onNavigateBack() // Volver al login
+                                        onNavigateBack() // back to login
                                     }
                                     .addOnFailureListener {
                                         isLoading = false

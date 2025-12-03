@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(
                             onNavigateToRegister = { navController.navigate("register") },
                             onLoginSuccess = {
-                                navController.navigate("home") {
+                                navController.navigate("main") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             }
@@ -46,8 +46,8 @@ class MainActivity : ComponentActivity() {
                     composable("register") {
                         RegisterScreen(onNavigateBack = { navController.popBackStack() })
                     }
-                    composable("home") {
-                        ListScreen() // Main screen
+                    composable("main") {
+                        BottomNavigationScreen()
                     }
                 }
 
