@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import com.uoc.whereisitproject.ui.theme.WhereIsItProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,8 +32,12 @@ class MainActivity : ComponentActivity() {
             WhereIsItProjectTheme {
 
                 val navController = rememberNavController()
+                val currentUser = FirebaseAuth.getInstance().currentUser
 
-                NavHost(navController = navController, startDestination = "login") {
+                NavHost(
+                    navController = navController,
+                    startDestination = if (currentUser != null) "main" else "login"
+                ) {
                     composable("login") {
                         LoginScreen(
                             onNavigateToRegister = { navController.navigate("register") },
