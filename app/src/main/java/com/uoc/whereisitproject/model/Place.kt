@@ -3,7 +3,7 @@ package com.uoc.whereisitproject.model
 import com.google.firebase.firestore.DocumentSnapshot
 
 /**
- * Data model for a Place (documento en /places/{placeId}).
+ * Data model for a Place (document in /places/{placeId}).
  * Every Place contains a subcollection of de Spots.
  */
 data class Place(

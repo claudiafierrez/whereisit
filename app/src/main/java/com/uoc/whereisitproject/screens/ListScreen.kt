@@ -1,4 +1,3 @@
-
 package com.uoc.whereisitproject.screens
 
 import android.Manifest
@@ -23,6 +22,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uoc.whereisitproject.model.Spot
 import com.uoc.whereisitproject.screens.components.SpotCard
@@ -50,6 +50,10 @@ fun ListScreen(
     var spots by remember { mutableStateOf<List<Spot>>(emptyList()) }
 
     val apiKey = remember { readMapsApiKey(context) }
+    val uid = remember { FirebaseAuth.getInstance().currentUser!!.uid }
+
+    var completedIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var placeId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         val isGranted = ContextCompat.checkSelfPermission(
@@ -106,10 +110,23 @@ fun ListScreen(
         }
     }
 
+    LaunchedEffect(placeId, uid) {
+        completedIds = emptySet()
+        val pid = placeId ?: return@LaunchedEffect
+
+        db.collection("users").document(uid)
+            .collection("completedSpots")
+            .whereEqualTo("placeId", pid)
+            .addSnapshotListener { snap, e ->
+                if (e != null) return@addSnapshotListener
+                completedIds = snap?.documents
+                    ?.mapNotNull { it.getString("spotId") }
+                    ?.toSet()
+                    ?: emptySet()
+            }
+    }
 
     // Once we have cityName, we search for the Place and its 5 Spots.
-    var placeId by remember { mutableStateOf<String?>(null) }
-
     LaunchedEffect(cityName) {
         val city = cityName ?: return@LaunchedEffect
         if (city.isBlank() || city == "Unknown") return@LaunchedEffect
@@ -176,7 +193,7 @@ fun ListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            //verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 text = "To discover in...",
@@ -227,9 +244,11 @@ fun ListScreen(
                     else -> {
                         items(spots.size) { index ->
                             val spot = spots[index]
+                            val isCompleted = completedIds.contains(spot.spotId)
                             SpotCard(
                                 spot = spot,
                                 apiKey = apiKey,
+                                isCompleted = isCompleted,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
