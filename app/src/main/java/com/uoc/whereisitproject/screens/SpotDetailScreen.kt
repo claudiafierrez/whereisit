@@ -68,60 +68,59 @@ fun SpotDetailScreen(
             }
     }
 
-    when {
-        loading -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        error != null -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text(text = error ?: "Error", color = MaterialTheme.colorScheme.error)
-            }
-        }
-        else -> {
-            val s = spot!!
-            val context = LocalContext.current
-            val apiKey = remember { readMapsApiKey(context) }
-            val imageUrl = remember(s, apiKey) {
-                streetViewUrl(
-                    lat = s.location.latitude,
-                    lng = s.location.longitude,
-                    apiKey = apiKey,
-                    width = 600, height = 400, scale = 2,
-                    heading = s.streetViewHeading,
-                    pitch = s.streetViewPitch
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                TopAppBar(
-                    windowInsets = WindowInsets(0, 0, 0, 0),
-                    title = { Text(text = "") },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                title = { Text("") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                )
+                }
+            )
+        }
+    ) { innerPadding ->
+        when {
+            loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            error != null -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(16.dp)
+                ) {
+                    Text(text = error ?: "Error", color = MaterialTheme.colorScheme.error)
+                }
+            }
+            else -> {
+                val s = spot!!
+                val context = LocalContext.current
+                val apiKey = remember { readMapsApiKey(context) }
+                val imageUrl = remember(s, apiKey) {
+                    streetViewUrl(
+                        lat = s.location.latitude,
+                        lng = s.location.longitude,
+                        apiKey = apiKey,
+                        width = 600, height = 400, scale = 2,
+                        heading = s.streetViewHeading,
+                        pitch = s.streetViewPitch
+                    )
+                }
 
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .padding(innerPadding)
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
