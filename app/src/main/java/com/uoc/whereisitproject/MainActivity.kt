@@ -10,6 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.uoc.whereisitproject.screens.BottomNavigationScreen
+import com.uoc.whereisitproject.screens.LoginScreen
+import com.uoc.whereisitproject.screens.RegisterScreen
 import com.uoc.whereisitproject.ui.theme.WhereIsItProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,9 +27,6 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-
-        //val meta = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
-        //Log.d("TFG", "MAPS KEY: ${meta.getString("com.google.android.geo.API_KEY")}")
 
         setContent {
             WhereIsItProjectTheme {

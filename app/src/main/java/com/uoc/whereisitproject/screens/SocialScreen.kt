@@ -1,4 +1,4 @@
-package com.uoc.whereisitproject
+package com.uoc.whereisitproject.screens
 
 import androidx.compose.runtime.*
 

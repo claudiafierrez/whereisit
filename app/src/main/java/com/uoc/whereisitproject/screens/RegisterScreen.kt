@@ -1,4 +1,4 @@
-package com.uoc.whereisitproject
+package com.uoc.whereisitproject.screens
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,9 +27,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.uoc.whereisitproject.R
 
 @Composable
 fun RegisterScreen(onNavigateBack: () -> Unit) {
@@ -137,7 +139,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                                     "email" to email,
                                     "profileImageUrl" to profileImageUrl,
                                     "points" to 0,
-                                    "createdAt" to com.google.firebase.Timestamp.now()
+                                    "createdAt" to Timestamp.now()
                                 )
 
                                 db.collection("users").document(userId).set(userData)

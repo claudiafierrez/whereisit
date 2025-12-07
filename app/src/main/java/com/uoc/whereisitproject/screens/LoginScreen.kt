@@ -1,5 +1,6 @@
-package com.uoc.whereisitproject
+package com.uoc.whereisitproject.screens
 
+import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
+import com.uoc.whereisitproject.R
 
 @Composable
 fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
@@ -27,7 +29,6 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val auth = FirebaseAuth.getInstance()
-    //val db = FirebaseFirestore.getInstance()
 
     Column(
         modifier = Modifier
@@ -50,7 +51,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
             value = email,
             onValueChange = {
                 email = it
-                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
+                emailError = if (!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
                     "Invalid email format"
                 } else null
 
@@ -127,6 +128,5 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
         }
-
     }
 }

@@ -1,5 +1,4 @@
-
-package com.uoc.whereisitproject
+package com.uoc.whereisitproject.screens
 
 import android.Manifest
 import android.app.Activity
@@ -46,12 +45,12 @@ fun BottomNavigationScreen() {
     ) { isGranted ->
         permissionGranted = isGranted
         if (!isGranted) {
-            // Si el usuario deniega, mostramos popup con opción Settings directamente
+            // user denies location, show popup to open settings
             showPermissionDialog = true
         }
     }
 
-    // Comprobar permiso al entrar
+    // check permission on entry
     LaunchedEffect(Unit) {
         val isGranted = ContextCompat.checkSelfPermission(
             context,
@@ -65,7 +64,7 @@ fun BottomNavigationScreen() {
         }
     }
 
-    // Detectar cambios al volver desde Settings
+    // Check changes on back from settings
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -87,11 +86,11 @@ fun BottomNavigationScreen() {
     }
 
     if (!permissionGranted) {
-        // Bloquea la pantalla y muestra popup
+        // Screen blocked and show popup
         Box(modifier = Modifier.fillMaxSize()) {
             if (showPermissionDialog) {
                 AlertDialog(
-                    onDismissRequest = { /* No permitir cerrar */ },
+                    onDismissRequest = { /* Close not available */ },
                     title = { Text("Location Required") },
                     text = {
                         Text("You must enable location permission from Settings to use the app.")
@@ -110,17 +109,34 @@ fun BottomNavigationScreen() {
             }
         }
     } else {
-        // Mostrar contenido solo si el permiso está concedido
-        Scaffold(bottomBar = { BottomNavigationBar(bottomNavController) }) { innerPadding ->
+        // Show content only if the permission is grant
+        Scaffold(
+            bottomBar = { BottomNavigationBar(bottomNavController) }
+        ) { innerPadding ->
             NavHost(
                 navController = bottomNavController,
                 startDestination = "list",
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable("list") { ListScreen() }
+                composable("list") {
+                    ListScreen(
+                        onSpotClick = { spotId, placeId ->
+                            bottomNavController.navigate("spotDetail/$spotId/$placeId")
+                        }
+                    )
+                }
                 composable("profile") { ProfileScreen() }
                 composable("achievements") { AchievementsScreen() }
                 composable("social") { SocialScreen() }
+                composable("spotDetail/{spotId}/{placeId}") { backStackEntry ->
+                    val spotId = backStackEntry.arguments?.getString("spotId") ?: ""
+                    val placeId = backStackEntry.arguments?.getString("placeId") ?: ""
+                    SpotDetailScreen(
+                        spotId = spotId,
+                        placeId = placeId,
+                        navController = bottomNavController
+                    )
+                }
             }
         }
     }
