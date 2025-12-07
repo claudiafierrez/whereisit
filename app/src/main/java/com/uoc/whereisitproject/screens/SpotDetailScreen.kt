@@ -37,9 +37,9 @@ import com.uoc.whereisitproject.model.Spot
 import com.uoc.whereisitproject.util.readMapsApiKey
 import com.uoc.whereisitproject.util.streetViewUrl
 import com.uoc.whereisitproject.R
-import com.uoc.whereisitproject.util.distanceMeters
-import com.uoc.whereisitproject.util.isSpotCompleted
-import com.uoc.whereisitproject.util.markSpotCompleted
+import com.uoc.whereisitproject.repository.distanceMeters
+import com.uoc.whereisitproject.repository.isSpotCompleted
+import com.uoc.whereisitproject.repository.markSpotCompleted
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -222,7 +222,8 @@ fun SpotDetailScreen(
                         AssistChip(
                             onClick = {},
                             label = { Text("Completed") },
-                            leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) }
+                            leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) },
+
                         )
                     }
 

@@ -5,14 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.uoc.whereisitproject.screens.BottomNavigationScreen
-import com.uoc.whereisitproject.screens.LoginScreen
-import com.uoc.whereisitproject.screens.RegisterScreen
+import com.uoc.whereisitproject.navigation.AppNavHost
 import com.uoc.whereisitproject.ui.theme.WhereIsItProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,35 +22,13 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-
         setContent {
             WhereIsItProjectTheme {
-
-                val navController = rememberNavController()
                 val currentUser = FirebaseAuth.getInstance().currentUser
-
-                NavHost(
-                    navController = navController,
-                    startDestination = if (currentUser != null) "main" else "login"
-                ) {
-                    composable("login") {
-                        LoginScreen(
-                            onNavigateToRegister = { navController.navigate("register") },
-                            onLoginSuccess = {
-                                navController.navigate("main") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            }
-                        )
-                    }
-                    composable("register") {
-                        RegisterScreen(onNavigateBack = { navController.popBackStack() })
-                    }
-                    composable("main") {
-                        BottomNavigationScreen()
-                    }
-                }
-
+                val start = if (currentUser != null) "main" else "login"
+                AppNavHost(
+                    startDestination = start
+                )
             }
         }
     }

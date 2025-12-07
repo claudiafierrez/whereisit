@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -31,7 +32,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun BottomNavigationScreen() {
+fun BottomNavigationScreen(
+    onLoggedOutNavigateToLogin : () -> Unit
+) {
     val bottomNavController = rememberNavController()
     val context = LocalContext.current
     val activity = context as Activity
@@ -96,12 +99,18 @@ fun BottomNavigationScreen() {
                         Text("You must enable location permission from Settings to use the app.")
                     },
                     confirmButton = {
-                        Button(onClick = {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                data = Uri.fromParts("package", activity.packageName, null)
-                            }
-                            activity.startActivity(intent)
-                        }) {
+                        Button(
+                            onClick = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts("package", activity.packageName, null)
+                                }
+                                activity.startActivity(intent)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Gray, // background
+                                contentColor = Color.White   // text
+                            )
+                        ) {
                             Text("Open Settings")
                         }
                     }
@@ -125,7 +134,11 @@ fun BottomNavigationScreen() {
                         }
                     )
                 }
-                composable("profile") { ProfileScreen() }
+                composable("profile") {
+                    ProfileScreen(
+                        onLoggedOut = onLoggedOutNavigateToLogin
+                    )
+                }
                 composable("achievements") { AchievementsScreen() }
                 composable("social") { SocialScreen() }
                 composable("spotDetail/{spotId}/{placeId}") { backStackEntry ->

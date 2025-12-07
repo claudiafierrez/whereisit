@@ -88,7 +88,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
             onClick = { imagePickerLauncher.launch("image/*") },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Gray, // background
-                contentColor = Color.White   // Texto text
+                contentColor = Color.White   // text
             )
 
         ) {

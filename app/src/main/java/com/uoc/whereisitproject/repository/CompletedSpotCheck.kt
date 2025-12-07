@@ -1,4 +1,4 @@
-package com.uoc.whereisitproject.util
+package com.uoc.whereisitproject.repository
 
 import android.location.Location
 import com.google.firebase.firestore.FieldValue
@@ -55,7 +55,7 @@ suspend fun markSpotCompleted(
                 true
             }
         }.await()
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }
