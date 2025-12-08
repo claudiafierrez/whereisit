@@ -140,13 +140,26 @@ fun BottomNavigationScreen(
                     )
                 }
                 composable("achievements") { AchievementsScreen() }
-                composable("social") { SocialScreen() }
+                composable("social") {
+                    SocialScreen(
+                        onUserClick = { userId ->
+                            bottomNavController.navigate("profile/$userId")
+                        }
+                    )
+                }
                 composable("spotDetail/{spotId}/{placeId}") { backStackEntry ->
                     val spotId = backStackEntry.arguments?.getString("spotId") ?: ""
                     val placeId = backStackEntry.arguments?.getString("placeId") ?: ""
                     SpotDetailScreen(
                         spotId = spotId,
                         placeId = placeId,
+                        navController = bottomNavController
+                    )
+                }
+                composable("profile/{userId}") { backStackEntry ->
+                    val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    SocialProfileScreen(
+                        userId = userId,
                         navController = bottomNavController
                     )
                 }
@@ -164,7 +177,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         NavigationBarItem(
             icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "List") },
             selected = currentRoute == "list",
-            onClick = { navController.navigate("list") }
+            onClick = {
+                navController.navigate("list") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.EmojiEvents, contentDescription = "Achievements") },
@@ -174,7 +188,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.People, contentDescription = "Social") },
             selected = currentRoute == "social",
-            onClick = { navController.navigate("social") }
+            onClick = {
+                navController.navigate("social") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },

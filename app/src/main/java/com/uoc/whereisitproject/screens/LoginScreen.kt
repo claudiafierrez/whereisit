@@ -115,7 +115,6 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
             Text(text = it, color = Color.Red)
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Row {

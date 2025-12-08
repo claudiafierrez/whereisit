@@ -6,14 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -49,7 +42,6 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
     val storage = FirebaseStorage.getInstance().reference
-
 
     // Launcher to select an image
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -135,7 +127,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                                     "userId" to userId,
                                     "firstName" to firstName,
                                     "lastName" to lastName,
-                                    "username" to username,
+                                    "username" to username.lowercase(),
                                     "email" to email,
                                     "profileImageUrl" to profileImageUrl,
                                     "points" to 0,

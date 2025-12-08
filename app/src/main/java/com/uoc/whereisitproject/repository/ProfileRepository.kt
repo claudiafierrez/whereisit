@@ -1,6 +1,5 @@
 package com.uoc.whereisitproject.repository
 
-
 import android.net.Uri
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth

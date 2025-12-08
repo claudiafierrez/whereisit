@@ -11,8 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.uoc.whereisitproject.model.EditProfileDialogAllInOne
-import com.uoc.whereisitproject.model.UserInfoSection
+import com.uoc.whereisitproject.screens.components.EditProfileDialog
+import com.uoc.whereisitproject.screens.components.UserInfoSection
 import com.uoc.whereisitproject.model.UserProfile
 import com.uoc.whereisitproject.screens.components.AvatarHeader
 import kotlinx.coroutines.launch
@@ -75,7 +75,6 @@ fun ProfileScreen(
                     )
                 }
             } catch (_: Exception) {
-                // error can be shown
             }
         }
     }
@@ -157,7 +156,7 @@ fun ProfileScreen(
 
             if (profile != null && showEdit) {
                 val p = profile!!
-                EditProfileDialogAllInOne(
+                EditProfileDialog(
                     initialFirstName = p.firstName,
                     initialLastName  = p.lastName,
                     currentImageUrl  = p.profileImageUrl,
@@ -168,13 +167,9 @@ fun ProfileScreen(
                     onSaved = {
                         refreshProfile()
                         showEdit = false
-
                     }
                 )
             }
-
         }
     }
-
-
 }

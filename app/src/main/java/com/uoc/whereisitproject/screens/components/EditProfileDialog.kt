@@ -1,4 +1,4 @@
-package com.uoc.whereisitproject.model
+package com.uoc.whereisitproject.screens.components
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,7 +26,7 @@ import com.uoc.whereisitproject.repository.uploadProfileImageAndGetUrl
 import kotlinx.coroutines.launch
 
 @Composable
-fun EditProfileDialogAllInOne(
+fun EditProfileDialog(
     // initial values for form
     initialFirstName: String,
     initialLastName: String,

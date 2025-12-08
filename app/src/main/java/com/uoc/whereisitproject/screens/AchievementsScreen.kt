@@ -1,13 +1,6 @@
 package com.uoc.whereisitproject.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uoc.whereisitproject.model.Spot
+import com.uoc.whereisitproject.repository.getCompletedSpotsByPlaceByUser
 import com.uoc.whereisitproject.screens.components.PlaceAchievementsSection
-import kotlinx.coroutines.tasks.await
 
 data class PlaceAchievements(
     val placeId: String,
@@ -48,54 +41,9 @@ fun AchievementsScreen(){
             loading = true
             error = null
 
-            val placesSnap = db.collection("places").get().await()
-            val placeDocs = placesSnap.documents
-            val results = mutableListOf<PlaceAchievements>()
+            achievements = getCompletedSpotsByPlaceByUser(uid, db).filter { it.completedIds.isNotEmpty() }
 
-            for (placeDoc in placeDocs) {
-                val placeId = placeDoc.id
-                val placeName = placeDoc.getString("name") ?: "(Sin nombre)"
-
-                // Spots of place
-                val spotsSnap = db.collection("places").document(placeId)
-                    .collection("spots")
-                    .get().await()
-
-                val spots = spotsSnap.documents.mapNotNull { d ->
-                    try {
-                        Spot(
-                            spotId = d.id,
-                            name = d.getString("name")!!,
-                            description = d.getString("description") ?: "",
-                            location = d.getGeoPoint("location")!!,
-                            streetViewHeading = d.getLong("streetViewHeading")!!.toInt(),
-                            streetViewPitch = d.getLong("streetViewPitch")!!.toInt(),
-                            difficulty = d.getLong("difficulty")!!.toInt()
-                        )
-                    } catch (_: Exception) {
-                        null
-                    }
-                }
-
-                // Completed spots by the user for that place
-                val completedSnap = db.collection("users").document(uid)
-                    .collection("completedSpots")
-                    .whereEqualTo("placeId", placeId)
-                    .get().await()
-
-                val completedIds = completedSnap.documents
-                    .mapNotNull { it.getString("spotId") }
-                    .toSet()
-
-                results += PlaceAchievements(
-                    placeId = placeId,
-                    placeName = placeName,
-                    spots = spots,
-                    completedIds = completedIds
-                )
-            }
-
-            achievements = results
+            //achievements = results.filter { it.completedIds.isNotEmpty() }
         } catch (e: Exception) {
             error = e.message ?: "Failed to load achievements"
         } finally {
