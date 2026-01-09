@@ -31,7 +31,7 @@
     <string name="new_password">New password</string>
     <string name="confirm_new_password">Confirm new password</string>
     <string name="error_saving_data">The changes could not be saved.</string>
-    <string name="saving">Saving...</string>
+    <string name="saving">Saving…</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="points">Points:</string>
@@ -51,12 +51,12 @@
     <string name="no_place_found">No place found for</string>
     <string name="fail_load_spots">Failed to load spots:</string>
     <string name="fail_load_place">Failed to load place:</string>
-    <string name="discover">To discover in...</string>
+    <string name="discover">To discover in…</string>
     <string name="no_spots_for_city">No spots for this city yet.</string>
     <string name="invalid_spot_data">Invalid spot data:</string>
     <string name="difficulty">Difficulty:</string>
     <string name="completed">Completed</string>
-    <string name="spot_got_it">You've got it!</string>
+    <string name="spot_got_it">You\'ve got it!</string>
 
     <string name="following">Following</string>
     <string name="pending">Pending</string>

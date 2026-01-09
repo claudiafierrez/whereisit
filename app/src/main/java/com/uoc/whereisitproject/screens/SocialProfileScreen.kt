@@ -102,7 +102,7 @@ fun SocialProfileScreen(
             }
             error != null -> {
                 Column(Modifier.fillMaxSize().padding(16.dp)) {
-                    Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
+                    //Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
                     Spacer(Modifier.height(12.dp))
                     Text(error!!, color = MaterialTheme.colorScheme.error)
                 }
@@ -115,7 +115,7 @@ fun SocialProfileScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
+                    //Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
                     // Avatar + username
                     AvatarHeader(
                         imageUrl = profile!!.profileImageUrl,
