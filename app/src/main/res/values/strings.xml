@@ -1,3 +1,73 @@
 <resources>
     <string name="app_name">Where is it?</string>
+
+    <string name="logo">Logo</string>
+    <string name="email">Email</string>
+    <string name="invalid_email_format">Invalid email format</string>
+    <string name="password">Password</string>
+    <string name="login">Log in</string>
+    <string name="new_user">Are you new?</string>
+    <string name="signup">Sign up</string>
+    <string name="create_account">Create Account</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="username">Username</string>
+    <string name="select_prof_image">Select Profile Image</string>
+    <string name="prof_image">Profile Image</string>
+    <string name="error_fill_fields">Please fill all necessary fields</string>
+    <string name="back_login">Back to Log in</string>
+    <string name="profile_not_found">Profile not found</string>
+    <string name="profile_error_loading">Error loading profile</string>
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Log out</string>
+    <string name="needed_name">The First Name or Last Name cannot be empty.</string>
+    <string name="enter_current_password">Enter your current password.</string>
+    <string name="enter_new_password">Enter the new password.</string>
+    <string name="enter_confirm_new_password">The password confirmation does not match.</string>
+    <string name="edit_photo">Edit photo</string>
+    <string name="change_password">Change password</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="error_saving_data">The changes could not be saved.</string>
+    <string name="saving">Saving...</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="points">Points:</string>
+
+    <string name="achievements">Achievements</string>
+    <string name="no_achievements_yet">You have no achievements yet.</string>
+    <string name="error_load_achievements">Failed to load achievements</string>
+
+    <string name="search_error">Search error</string>
+    <string name="social">Social</string>
+    <string name="search_users_by_username">Search users by username</string>
+    <string name="matching_users">There are no users matching</string>
+    
+    <string name="no_permission">Permission not granted</string>
+    <string name="unknown">Unknown</string>
+    <string name="location_not_available">Location not available</string>
+    <string name="no_place_found">No place found for</string>
+    <string name="fail_load_spots">Failed to load spots:</string>
+    <string name="fail_load_place">Failed to load place:</string>
+    <string name="discover">To discover in...</string>
+    <string name="no_spots_for_city">No spots for this city yet.</string>
+    <string name="invalid_spot_data">Invalid spot data:</string>
+    <string name="difficulty">Difficulty:</string>
+    <string name="completed">Completed</string>
+    <string name="spot_got_it">You've got it!</string>
+
+    <string name="following">Following</string>
+    <string name="pending">Pending</string>
+    <string name="follow">Follow</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="followup_requests">Follow-up requests</string>
+    <string name="no_pending_requests">You have no pending requests.</string>
+    <string name="close">Close</string>
+    <string name="wants_follow">Wants to follow you</string>
+
+    <string name="error">Error</string>
+    <string name="dash">-</string>
 </resources>

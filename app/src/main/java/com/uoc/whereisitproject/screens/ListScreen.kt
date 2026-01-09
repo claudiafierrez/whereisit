@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -24,6 +25,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.model.Spot
 import com.uoc.whereisitproject.screens.components.SpotCard
 import com.uoc.whereisitproject.util.readMapsApiKey
@@ -55,6 +57,14 @@ fun ListScreen(
     var completedIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var placeId by remember { mutableStateOf<String?>(null) }
 
+    val permissionNotGrantedText = stringResource(id = R.string.no_permission)
+    val unknownText = stringResource(id = R.string.unknown)
+    val locationNotAvailableText = stringResource(id = R.string.location_not_available)
+    val noPlaceFoundText = stringResource(id = R.string.no_place_found)
+    val failLoadSpotsText = stringResource(id = R.string.fail_load_spots)
+    val failLoadPlaceText = stringResource(id = R.string.fail_load_place)
+    val dashText = stringResource(id = R.string.dash)
+
     LaunchedEffect(Unit) {
         val isGranted = ContextCompat.checkSelfPermission(
             context,
@@ -62,7 +72,7 @@ fun ListScreen(
         ) == PackageManager.PERMISSION_GRANTED
 
         if (!isGranted) {
-            error = "Permission not granted"
+            error = permissionNotGrantedText
             isLocating = false
             return@LaunchedEffect
         }
@@ -74,7 +84,7 @@ fun ListScreen(
                         val geocoder = Geocoder(context, Locale.getDefault())
                         @Suppress("DEPRECATION")
                         val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                        cityName = addresses?.firstOrNull()?.locality ?: "Unknown"
+                        cityName = addresses?.firstOrNull()?.locality ?: unknownText
                     }
                     isLocating = false
                 }
@@ -93,12 +103,12 @@ fun ListScreen(
                                     val geocoder = Geocoder(context, Locale.getDefault())
                                     @Suppress("DEPRECATION")
                                     val addresses = geocoder.getFromLocation(newLocation.latitude, newLocation.longitude, 1)
-                                    cityName = addresses?.firstOrNull()?.locality ?: "Unknown"
+                                    cityName = addresses?.firstOrNull()?.locality ?: unknownText
                                 }
                                 isLocating = false
                             }
                         } else {
-                            error = "Location not available"
+                            error = locationNotAvailableText
                             isLocating = false
                         }
                     }
@@ -142,7 +152,7 @@ fun ListScreen(
             .get()
             .addOnSuccessListener { placeSnap ->
                 if (placeSnap.isEmpty) {
-                    error = "No place found for '$city'."
+                    error = "$noPlaceFoundText '$city'."
                     isLoadingSpots = false
                 } else {
                     placeId = placeSnap.documents.first().id
@@ -166,13 +176,13 @@ fun ListScreen(
                             isLoadingSpots = false
                         }
                         .addOnFailureListener {
-                            error = "Failed to load spots: ${it.message}"
+                            error = failLoadSpotsText + " ${it.message}"
                             isLoadingSpots = false
                         }
                 }
             }
             .addOnFailureListener {
-                error = "Failed to load place: ${it.message}"
+                error = failLoadPlaceText + " ${it.message}"
                 isLoadingSpots = false
             }
     }
@@ -196,11 +206,11 @@ fun ListScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "To discover in...",
+                text = stringResource(id = R.string.discover),
                 style = MaterialTheme.typography.headlineLarge
             )
             Text(
-                text = cityName ?: "—",
+                text = cityName ?: dashText,
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(Modifier.height(12.dp))
@@ -238,7 +248,7 @@ fun ListScreen(
                     }
                     spots.isEmpty() -> {
                         item {
-                            Text("No spots for this city yet.")
+                            Text(text = stringResource(id = R.string.no_spots_for_city))
                         }
                     }
                     else -> {

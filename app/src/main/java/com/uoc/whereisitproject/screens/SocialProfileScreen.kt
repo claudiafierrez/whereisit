@@ -9,10 +9,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.data.getFollowStatus
 import com.uoc.whereisitproject.model.FollowStatus
 import com.uoc.whereisitproject.screens.components.UserInfoSection
@@ -40,12 +42,15 @@ fun SocialProfileScreen(
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
+    val errorProfileFoundText = stringResource(id = R.string.profile_not_found)
+    val errorProfileLoadingText = stringResource(id = R.string.profile_error_loading)
+
     LaunchedEffect(userId) {
         try {
             loading = true; error = null
             val doc = db.collection("users").document(userId).get().await()
             if (!doc.exists()) {
-                error = "Profile not found"
+                error = errorProfileFoundText
             } else {
                 profile = UserProfile(
                     userId = doc.id,
@@ -60,7 +65,7 @@ fun SocialProfileScreen(
             status = getFollowStatus(db, currentUid, userId)
             achievements = getCompletedSpotsByPlaceByUser(userId, db).filter { it.completedIds.isNotEmpty() }
         } catch (e: Exception) {
-            error = e.message ?: "Error loading profile"
+            error = e.message ?: errorProfileLoadingText
         } finally {
             loading = false
         }
@@ -71,7 +76,7 @@ fun SocialProfileScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Profile", style = MaterialTheme.typography.headlineLarge) },
+                title = { Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -83,12 +88,13 @@ fun SocialProfileScreen(
 
             )
         }
-    ) {
+    ) { innerPadding ->
         when {
             loading -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(innerPadding),
                     contentAlignment = Alignment.Center)
                 {
                     CircularProgressIndicator()
@@ -96,7 +102,7 @@ fun SocialProfileScreen(
             }
             error != null -> {
                 Column(Modifier.fillMaxSize().padding(16.dp)) {
-                    Text("Profile", style = MaterialTheme.typography.headlineLarge)
+                    Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
                     Spacer(Modifier.height(12.dp))
                     Text(error!!, color = MaterialTheme.colorScheme.error)
                 }
@@ -105,10 +111,11 @@ fun SocialProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .padding(innerPadding)
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("Profile", style = MaterialTheme.typography.headlineLarge)
+                    Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
                     // Avatar + username
                     AvatarHeader(
                         imageUrl = profile!!.profileImageUrl,
@@ -139,9 +146,9 @@ fun SocialProfileScreen(
                         Divider()
                         
                         //code for show achievements
-                        Text("Achievements", style = MaterialTheme.typography.headlineSmall)
+                        Text(text = stringResource(id = R.string.achievements), style = MaterialTheme.typography.headlineSmall)
                         if (achievements.isEmpty()) {
-                            Text("You have no achievements yet.")
+                            Text(text = stringResource(id = R.string.no_achievements_yet))
                         } else {
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(16.dp),

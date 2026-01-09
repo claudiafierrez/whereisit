@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,6 +64,8 @@ fun SpotDetailScreen(
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val scope = rememberCoroutineScope()
 
+    val invalidSpotDataText = stringResource(id = R.string.invalid_spot_data)
+
     LaunchedEffect(spotId, placeId) {
         try {
             val doc = db.collection("places").document(placeId)
@@ -80,7 +83,7 @@ fun SpotDetailScreen(
             )
             loading = false
         } catch (e: Exception) {
-            error = "Invalid spot data: ${e.message}"
+            error = invalidSpotDataText + " ${e.message}"
             loading = false
         }
     }
@@ -162,7 +165,7 @@ fun SpotDetailScreen(
                         .padding(innerPadding)
                         .padding(16.dp)
                 ) {
-                    Text(text = error ?: "Error", color = MaterialTheme.colorScheme.error)
+                    Text(text = error ?: stringResource(id = R.string.error), color = MaterialTheme.colorScheme.error)
                 }
             }
             else -> {
@@ -195,7 +198,7 @@ fun SpotDetailScreen(
                         style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Justify)
                     )
                     Text(
-                        text = "Difficulty: ${s.difficulty}",
+                        text = stringResource(id = R.string.difficulty) + " ${s.difficulty}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                     AsyncImage(
@@ -215,7 +218,7 @@ fun SpotDetailScreen(
                     if (isCompleted) {
                         AssistChip(
                             onClick = {},
-                            label = { Text("Completed") },
+                            label = { Text(text = stringResource(id = R.string.completed)) },
                             leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) },
 
                         )
@@ -224,7 +227,7 @@ fun SpotDetailScreen(
                     if (showDialog && !isCompleted) {
                         AlertDialog(
                             onDismissRequest = { showDialog = false },
-                            title = { Text("You've got it!") },
+                            title = { Text(text = stringResource(id = R.string.spot_got_it)) },
                             confirmButton = {
                                 Button(
                                     colors = ButtonDefaults.buttonColors(
@@ -242,7 +245,7 @@ fun SpotDetailScreen(
                                             showDialog = false
                                         }
                                     }
-                                ) { Text("Completed") }
+                                ) { Text(text = stringResource(id = R.string.completed)) }
                             }
                         )
                     }

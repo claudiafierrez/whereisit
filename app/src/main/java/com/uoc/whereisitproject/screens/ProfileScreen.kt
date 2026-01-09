@@ -7,10 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.screens.components.EditProfileDialog
 import com.uoc.whereisitproject.screens.components.UserInfoSection
 import com.uoc.whereisitproject.model.UserProfile
@@ -34,13 +36,16 @@ fun ProfileScreen(
 
     val scope = rememberCoroutineScope()
 
+    val errorProfileFoundText = stringResource(id = R.string.profile_not_found)
+    val errorProfileLoadingText = stringResource(id = R.string.profile_error_loading)
+
     // Load profile
     LaunchedEffect(uid) {
         try {
             loading = true; error = null
             val doc = db.collection("users").document(uid).get().await()
             if (!doc.exists()) {
-                error = "Profile not found"
+                error = errorProfileFoundText
             } else {
                 profile = UserProfile(
                     userId = doc.id,
@@ -53,7 +58,7 @@ fun ProfileScreen(
                 )
             }
         } catch (e: Exception) {
-            error = e.message ?: "Error loading profile"
+            error = e.message ?: errorProfileLoadingText
         } finally {
             loading = false
         }
@@ -92,7 +97,7 @@ fun ProfileScreen(
         }
         error != null -> {
             Column(Modifier.fillMaxSize().padding(16.dp)) {
-                Text("Profile", style = MaterialTheme.typography.headlineLarge)
+                Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
                 Spacer(Modifier.height(12.dp))
                 Text(error!!, color = MaterialTheme.colorScheme.error)
             }
@@ -106,7 +111,7 @@ fun ProfileScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Profile", style = MaterialTheme.typography.headlineLarge)
+                Text(text = stringResource(id = R.string.profile), style = MaterialTheme.typography.headlineLarge)
 
                 // Avatar + username
                 AvatarHeader(
@@ -143,13 +148,13 @@ fun ProfileScreen(
                             contentColor = Color.White   // text
                         )
                     ) {
-                        Text("Edit profile")
+                        Text(text = stringResource(id = R.string.edit_profile))
                     }
                     OutlinedButton(onClick = {
                         auth.signOut()
                         onLoggedOut()
                     }) {
-                        Text("Log out")
+                        Text(text = stringResource(id = R.string.logout))
                     }
                 }
             }

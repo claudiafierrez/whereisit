@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,13 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
     val db = FirebaseFirestore.getInstance()
     val storage = FirebaseStorage.getInstance().reference
 
+    val firstNameText = stringResource(id = R.string.first_name)
+    val lastNameText = stringResource(id = R.string.last_name)
+    val usernameText = stringResource(id = R.string.username)
+    val emailText = stringResource(id = R.string.email)
+    val passwordText = stringResource(id = R.string.password)
+    val errorFillFieldsText = stringResource(id = R.string.error_fill_fields)
+
     // Launcher to select an image
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -64,15 +72,15 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
             modifier = Modifier.size(80.dp)
         )
 
-        Text("Create Account", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(id = R.string.invalid_email_format), style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(value = firstName, onValueChange = { firstName = it }, label = { Text("First Name") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = lastName, onValueChange = { lastName = it }, label = { Text("Last Name") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Username") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation())
+        OutlinedTextField(value = firstName, onValueChange = { firstName = it }, label = { Text(firstNameText) }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = lastName, onValueChange = { lastName = it }, label = { Text(lastNameText) }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text(usernameText) }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text(emailText) }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text(passwordText) }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation())
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,7 +92,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
             )
 
         ) {
-            Text("Select Profile Image")
+            Text(text = stringResource(id = R.string.select_prof_image))
         }
 
         selectedImageUri?.let { uri ->
@@ -104,7 +112,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
         Button(
             onClick = {
                 if (firstName.isBlank() || lastName.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || selectedImageUri == null) {
-                    errorMessage = "Please fill all necessary fields"
+                    errorMessage = errorFillFieldsText
                     return@Button
                 }
 
@@ -157,7 +165,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White)
         ) {
-            Text("Sign up")
+            Text(text = stringResource(id = R.string.signup))
         }
 
         if (isLoading) {
@@ -173,7 +181,7 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Back to Login",
+            text = stringResource(id = R.string.back_login),
             color = Color.Blue,
             style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
             modifier = Modifier.clickable { onNavigateBack() }

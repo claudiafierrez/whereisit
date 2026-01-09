@@ -13,12 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.repository.changePasswordWithReauth
 import com.uoc.whereisitproject.repository.updateProfileImageUrl
 import com.uoc.whereisitproject.repository.updateUserNames
@@ -58,6 +60,12 @@ fun EditProfileDialog(
     val scope = rememberCoroutineScope()
     val uid = remember { auth.currentUser!!.uid }
 
+    val fillNameLastText = stringResource(id = R.string.needed_name)
+    val currentPasswordText = stringResource(id = R.string.enter_current_password)
+    val newPasswordText = stringResource(id = R.string.enter_new_password)
+    val confirmNewPasswordText = stringResource(id = R.string.enter_confirm_new_password)
+    val errorSavingNewDataText = stringResource(id = R.string.error_saving_data)
+
     // Image picker
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -71,20 +79,20 @@ fun EditProfileDialog(
 
     fun validateInputs(): String? {
         // validations
-        if (firstName.isBlank() || lastName.isBlank()) return "The First Name or Last Name cannot be empty."
+        if (firstName.isBlank() || lastName.isBlank()) return fillNameLastText
         // If the user wishes to change their password, they must complete all 3 fields and match
         val wantsPasswordChange = currentPwd.isNotBlank() || newPwd.isNotBlank() || confirmPwd.isNotBlank()
         if (wantsPasswordChange) {
-            if (currentPwd.isBlank()) return "Enter your current password."
-            if (newPwd.isBlank()) return "Enter the new password."
-            if (newPwd != confirmPwd) return "The password confirmation does not match."
+            if (currentPwd.isBlank()) return currentPasswordText
+            if (newPwd.isBlank()) return newPasswordText
+            if (newPwd != confirmPwd) return confirmNewPasswordText
         }
         return null
     }
 
     AlertDialog(
         onDismissRequest = { if (!saving) onDismiss() },
-        title = { Text("Edit profile") },
+        title = { Text(text = stringResource(id = R.string.edit_profile)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -118,7 +126,7 @@ fun EditProfileDialog(
                         enabled = !saving,
                         onClick = { imagePicker.launch("image/*") }
                     ) {
-                        Text("Edit photo")
+                        Text(text = stringResource(id = R.string.edit_photo))
                     }
                 }
 
@@ -130,7 +138,7 @@ fun EditProfileDialog(
                 OutlinedTextField(
                     value = firstName,
                     onValueChange = { firstName = it },
-                    label = { Text("First Name") },
+                    label = { Text(text = stringResource(id = R.string.first_name)) },
                     singleLine = true,
                     enabled = !saving,
                     modifier = Modifier.fillMaxWidth()
@@ -138,7 +146,7 @@ fun EditProfileDialog(
                 OutlinedTextField(
                     value = lastName,
                     onValueChange = { lastName = it },
-                    label = { Text("Last Name") },
+                    label = { Text(text = stringResource(id = R.string.last_name)) },
                     singleLine = true,
                     enabled = !saving,
                     modifier = Modifier.fillMaxWidth()
@@ -148,11 +156,11 @@ fun EditProfileDialog(
                 Divider()
 
                 // Password
-                Text("Change password", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(id = R.string.change_password), style = MaterialTheme.typography.titleMedium)
                 OutlinedTextField(
                     value = currentPwd,
                     onValueChange = { currentPwd = it },
-                    label = { Text("Current password") },
+                    label = { Text(text = stringResource(id = R.string.current_password)) },
                     singleLine = true,
                     enabled = !saving,
                     visualTransformation = PasswordVisualTransformation(),
@@ -161,7 +169,7 @@ fun EditProfileDialog(
                 OutlinedTextField(
                     value = newPwd,
                     onValueChange = { newPwd = it },
-                    label = { Text("New password") },
+                    label = { Text(text = stringResource(id = R.string.new_password)) },
                     singleLine = true,
                     enabled = !saving,
                     visualTransformation = PasswordVisualTransformation(),
@@ -170,7 +178,7 @@ fun EditProfileDialog(
                 OutlinedTextField(
                     value = confirmPwd,
                     onValueChange = { confirmPwd = it },
-                    label = { Text("Confirm new password") },
+                    label = { Text(text = stringResource(id = R.string.confirm_new_password)) },
                     singleLine = true,
                     enabled = !saving,
                     visualTransformation = PasswordVisualTransformation(),
@@ -224,7 +232,7 @@ fun EditProfileDialog(
                             onSaved()
                             onDismiss()
                         } catch (e: Exception) {
-                            errorMsg = e.message ?: "The changes could not be saved."
+                            errorMsg = e.message ?: errorSavingNewDataText
                         } finally {
                             saving = false
                         }
@@ -236,9 +244,9 @@ fun EditProfileDialog(
                         modifier = Modifier.size(18.dp), strokeWidth = 2.dp
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Saving...")
+                    Text(text = stringResource(id = R.string.saving))
                 } else {
-                    Text("Save")
+                    Text(text = stringResource(id = R.string.save))
                 }
             }
         },
@@ -248,7 +256,7 @@ fun EditProfileDialog(
                 onClick = onDismiss,
             ) {
                 Text(
-                    "Cancel",
+                    text = stringResource(id = R.string.cancel),
                     color = Color.Black
                 )
             }

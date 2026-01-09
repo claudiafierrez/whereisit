@@ -8,9 +8,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.data.acceptFollow
 import com.uoc.whereisitproject.data.getPendingRequestsOnce
 import com.uoc.whereisitproject.data.rejectFollow
@@ -46,6 +48,8 @@ fun SocialScreen(
 
     val scope = rememberCoroutineScope()
     var searchJob by remember { mutableStateOf<Job?>(null) }
+
+    val searchErrorText = stringResource(id = R.string.search_error)
 
     fun refreshPending() {
         scope.launch {
@@ -97,7 +101,7 @@ fun SocialScreen(
                         )
                     }
             } catch (e: Exception) {
-                error = e.message ?: "Search error"
+                error = e.message ?: searchErrorText
             } finally {
                 loading = false
             }
@@ -109,7 +113,7 @@ fun SocialScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Social", style = MaterialTheme.typography.headlineLarge) },
+                title = { Text(text = stringResource(id = R.string.social), style = MaterialTheme.typography.headlineLarge) },
                 actions = {
                     NotificationsIcon(
                         pendingCount = pendingCount,
@@ -141,7 +145,7 @@ fun SocialScreen(
                 onSearch = { performSearch(query) },
                 active = active,
                 onActiveChange = { active = it },
-                placeholder = { Text("Search users by username") },
+                placeholder = { Text(text = stringResource(id = R.string.search_users_by_username)) },
                 trailingIcon = {
                     if (loading) {
                         CircularProgressIndicator(
@@ -164,7 +168,7 @@ fun SocialScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 } else if (results.isEmpty() && query.isNotBlank() && !loading) {
-                    Text("There are no users matching “$query”.", modifier = Modifier.padding(16.dp))
+                    Text(text = stringResource(id = R.string.matching_users) + " “$query”.", modifier = Modifier.padding(16.dp))
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),

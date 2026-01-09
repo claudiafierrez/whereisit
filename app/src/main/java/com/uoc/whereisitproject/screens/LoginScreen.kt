@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -29,6 +30,8 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val auth = FirebaseAuth.getInstance()
+
+    val invalidEmailText = stringResource(id = R.string.invalid_email_format)
 
     Column(
         modifier = Modifier
@@ -52,11 +55,11 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
             onValueChange = {
                 email = it
                 emailError = if (!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-                    "Invalid email format"
+                    invalidEmailText
                 } else null
 
             },
-            label = { Text("Email") },
+            label = { Text(text = stringResource(id = R.string.email)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -72,14 +75,13 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
             )
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         // Input password
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(text = stringResource(id = R.string.password)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
@@ -107,7 +109,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
                 contentColor = Color.White // text color
             )
         ) {
-            Text("Log in")
+            Text(text = stringResource(id = R.string.login))
         }
 
         errorMessage?.let {
@@ -118,9 +120,9 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row {
-            Text(text = "Are you new? ")
+            Text(text = stringResource(id = R.string.new_user))
             Text(
-                text = "Sign up",
+                text = stringResource(id = R.string.signup),
                 color = Color.Blue,
                 fontSize = 16.sp,
                 style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),

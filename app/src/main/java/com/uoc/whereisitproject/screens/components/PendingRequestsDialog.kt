@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.model.FollowRequest
 
 @Composable
@@ -28,10 +30,10 @@ fun PendingRequestsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Follow-up requests") },
+        title = { Text(text = stringResource(id = R.string.followup_requests)) },
         text = {
             if (requests.isEmpty()) {
-                Text("You have no pending requests.")
+                Text(text = stringResource(id = R.string.no_pending_requests))
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
@@ -62,7 +64,7 @@ fun PendingRequestsDialog(
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Text(
-                                    text = "Wants to follow you",
+                                    text = stringResource(id = R.string.wants_follow),
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 Row(
@@ -81,13 +83,13 @@ fun PendingRequestsDialog(
                                         ),
                                         contentPadding = PaddingValues(0.dp)
                                     ) {
-                                        Text("Accept")
+                                        Text(text = stringResource(id = R.string.accept))
                                     }
                                     OutlinedButton(
                                         onClick = { onReject(req.followId) },
                                         contentPadding = PaddingValues(0.dp)
                                     ) {
-                                        Text("Reject")
+                                        Text(text = stringResource(id = R.string.reject))
                                     }
                                 }
                             }
@@ -98,7 +100,7 @@ fun PendingRequestsDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Close", color = Color.Black) }
+            TextButton(onClick = onDismiss) { Text(text = stringResource(id = R.string.close), color = Color.Black) }
         }
     )
 }

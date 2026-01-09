@@ -8,9 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.data.getFollowStatus
 import com.uoc.whereisitproject.data.followUser
 import com.uoc.whereisitproject.data.unfollowUser
@@ -56,7 +58,7 @@ fun FollowChip(
                             } catch (_: Exception) { }
                         }
                     },
-                    label = { Text("Following") }
+                    label = { Text(text = stringResource(id = R.string.following)) }
                 )
             }
 
@@ -65,7 +67,7 @@ fun FollowChip(
                 AssistChip(
                     onClick = { /* not activated */ },
                     enabled = false,
-                    label = { Text("Pending") }
+                    label = { Text(text = stringResource(id = R.string.pending)) }
                 )
             }
 
@@ -80,7 +82,7 @@ fun FollowChip(
                             } catch (_: Exception) { }
                         }
                     },
-                    label = { Text("Follow") }
+                    label = { Text(text = stringResource(id = R.string.follow)) }
                 )
             }
 
@@ -95,7 +97,7 @@ fun FollowChip(
                             } catch (_: Exception) { }
                         }
                     },
-                    label = { Text("Follow") }
+                    label = { Text(text = stringResource(id = R.string.follow)) }
                 )
             }
         }

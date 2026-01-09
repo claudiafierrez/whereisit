@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uoc.whereisitproject.R
 import com.uoc.whereisitproject.model.Spot
 import com.uoc.whereisitproject.repository.getCompletedSpotsByPlaceByUser
 import com.uoc.whereisitproject.screens.components.PlaceAchievementsSection
@@ -36,6 +38,8 @@ fun AchievementsScreen(){
     var error by remember { mutableStateOf<String?>(null) }
     var achievements by remember { mutableStateOf<List<PlaceAchievements>>(emptyList()) }
 
+    val errorLoadAchievementsText = stringResource(id = R.string.error_load_achievements)
+
     LaunchedEffect(uid) {
         try {
             loading = true
@@ -43,9 +47,8 @@ fun AchievementsScreen(){
 
             achievements = getCompletedSpotsByPlaceByUser(uid, db).filter { it.completedIds.isNotEmpty() }
 
-            //achievements = results.filter { it.completedIds.isNotEmpty() }
         } catch (e: Exception) {
-            error = e.message ?: "Failed to load achievements"
+            error = e.message ?: errorLoadAchievementsText
         } finally {
             loading = false
         }
@@ -70,7 +73,7 @@ fun AchievementsScreen(){
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Text("Achievements", style = MaterialTheme.typography.headlineLarge)
+                Text(text = stringResource(id = R.string.achievements), style = MaterialTheme.typography.headlineLarge)
                 Spacer(Modifier.height(12.dp))
                 Text(text = error!!, color = MaterialTheme.colorScheme.error)
             }
@@ -82,11 +85,11 @@ fun AchievementsScreen(){
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Text("Achievements", style = MaterialTheme.typography.headlineLarge)
+                Text(text = stringResource(id = R.string.achievements), style = MaterialTheme.typography.headlineLarge)
                 Spacer(Modifier.height(12.dp))
 
                 if (achievements.isEmpty()) {
-                    Text("You have no achievements yet.")
+                    Text(text = stringResource(id = R.string.no_achievements_yet))
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
