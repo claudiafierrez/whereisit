@@ -1,12 +1,16 @@
 <resources>
     <string name="app_name">Where is it?</string>
 
+    <string name="location_required">Location Required</string>
+    <string name="must_enable_location">You must enable location permission from Settings to use the app.</string>
+    <string name="settings">Open Settings</string>
+
     <string name="logo">Logo</string>
     <string name="email">Email</string>
     <string name="invalid_email_format">Invalid email format</string>
     <string name="password">Password</string>
     <string name="login">Log in</string>
-    <string name="new_user">Are you new?</string>
+    <string name="new_user">Are you new?&#160;</string>
     <string name="signup">Sign up</string>
     <string name="create_account">Create Account</string>
     <string name="first_name">First Name</string>

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -30,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.uoc.whereisitproject.R
 
 @Composable
 fun BottomNavigationScreen(
@@ -94,9 +97,9 @@ fun BottomNavigationScreen(
             if (showPermissionDialog) {
                 AlertDialog(
                     onDismissRequest = { /* Close not available */ },
-                    title = { Text("Location Required") },
+                    title = { Text(stringResource(id = R.string.location_required)) },
                     text = {
-                        Text("You must enable location permission from Settings to use the app.")
+                        Text(stringResource(id = R.string.must_enable_location))
                     },
                     confirmButton = {
                         Button(
@@ -111,13 +114,29 @@ fun BottomNavigationScreen(
                                 contentColor = Color.White   // text
                             )
                         ) {
-                            Text("Open Settings")
+                            Text(stringResource(id = R.string.settings))
                         }
                     }
                 )
             }
         }
     } else {
+        val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        val mainRoutes = listOf(
+            "list",
+            "achievements",
+            "social",
+            "profile"
+        )
+
+        // Back closes the app ONLY on main screens
+        if (currentRoute in mainRoutes) {
+            BackHandler {
+                activity.finish()
+            }
+        }
         // Show content only if the permission is grant
         Scaffold(
             bottomBar = { BottomNavigationBar(bottomNavController) }
@@ -178,23 +197,54 @@ fun BottomNavigationBar(navController: NavHostController) {
             icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "List") },
             selected = currentRoute == "list",
             onClick = {
-                navController.navigate("list") }
+                navController.navigate("list") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.EmojiEvents, contentDescription = "Achievements") },
             selected = currentRoute == "achievements",
-            onClick = { navController.navigate("achievements") }
+            onClick = {
+                navController.navigate("achievements") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.People, contentDescription = "Social") },
             selected = currentRoute == "social",
             onClick = {
-                navController.navigate("social") }
+                navController.navigate("social") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
             selected = currentRoute == "profile",
-            onClick = { navController.navigate("profile") }
+            onClick = {
+                navController.navigate("profile") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+
+            }
         )
     }
 }

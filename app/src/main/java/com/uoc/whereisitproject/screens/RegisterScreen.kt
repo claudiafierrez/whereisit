@@ -1,6 +1,5 @@
 package com.uoc.whereisitproject.screens
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -21,41 +20,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.uoc.whereisitproject.R
+import com.uoc.whereisitproject.screens.register.RegisterViewModel
 
 @Composable
-fun RegisterScreen(onNavigateBack: () -> Unit) {
-
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
-    val storage = FirebaseStorage.getInstance().reference
-
-    val firstNameText = stringResource(id = R.string.first_name)
-    val lastNameText = stringResource(id = R.string.last_name)
-    val usernameText = stringResource(id = R.string.username)
-    val emailText = stringResource(id = R.string.email)
-    val passwordText = stringResource(id = R.string.password)
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
+    onNavigateBack: () -> Unit
+) {
     val errorFillFieldsText = stringResource(id = R.string.error_fill_fields)
 
-    // Launcher to select an image
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        selectedImageUri = uri
+    ) { uri ->
+        viewModel.onImageSelected(uri)
     }
 
     Column(
@@ -65,22 +43,44 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
             modifier = Modifier.size(80.dp)
         )
 
-        Text(text = stringResource(id = R.string.invalid_email_format), style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(id = R.string.create_account), style = MaterialTheme.typography.titleLarge)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = viewModel.firstName,
+            onValueChange = viewModel::onFirstNameChange,
+            label = { Text(stringResource(R.string.first_name)) }
+        )
 
-        OutlinedTextField(value = firstName, onValueChange = { firstName = it }, label = { Text(firstNameText) }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = lastName, onValueChange = { lastName = it }, label = { Text(lastNameText) }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text(usernameText) }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text(emailText) }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text(passwordText) }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation())
+        OutlinedTextField(
+            value = viewModel.lastName,
+            onValueChange = viewModel::onLastNameChange,
+            label = { Text(stringResource(R.string.last_name)) }
+        )
+
+        OutlinedTextField(
+            value = viewModel.username,
+            onValueChange = viewModel::onUsernameChange,
+            label = { Text(stringResource(R.string.username)) }
+        )
+
+        OutlinedTextField(
+            value = viewModel.email,
+            onValueChange = viewModel::onEmailChange,
+            label = { Text(stringResource(R.string.email)) }
+        )
+
+        OutlinedTextField(
+            value = viewModel.password,
+            onValueChange = viewModel::onPasswordChange,
+            label = { Text(stringResource(R.string.password)) },
+            visualTransformation = PasswordVisualTransformation()
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -90,12 +90,11 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
                 containerColor = Color.Gray, // background
                 contentColor = Color.White   // text
             )
-
         ) {
-            Text(text = stringResource(id = R.string.select_prof_image))
+            Text(stringResource(R.string.select_prof_image))
         }
 
-        selectedImageUri?.let { uri ->
+        viewModel.profileImageUri?.let { uri ->
             AsyncImage(
                 model = uri,
                 contentDescription = "Profile Image",
@@ -111,70 +110,22 @@ fun RegisterScreen(onNavigateBack: () -> Unit) {
 
         Button(
             onClick = {
-                if (firstName.isBlank() || lastName.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || selectedImageUri == null) {
-                    errorMessage = errorFillFieldsText
-                    return@Button
-                }
-
-                isLoading = true
-
-                // Create user in Firebase Auth
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener { result ->
-                        val userId = result.user?.uid ?: return@addOnSuccessListener
-
-                        // Upload image to Firebase Storage
-                        val imageRef = storage.child("profileImages/$userId.jpg")
-                        imageRef.putFile(selectedImageUri!!)
-                            .continueWithTask { imageRef.downloadUrl }
-                            .addOnSuccessListener { uri ->
-                                val profileImageUrl = uri.toString()
-
-                                // Save data in Firestore
-                                val userData = hashMapOf(
-                                    "userId" to userId,
-                                    "firstName" to firstName,
-                                    "lastName" to lastName,
-                                    "username" to username.lowercase(),
-                                    "email" to email,
-                                    "profileImageUrl" to profileImageUrl,
-                                    "points" to 0,
-                                    "createdAt" to Timestamp.now()
-                                )
-
-                                db.collection("users").document(userId).set(userData)
-                                    .addOnSuccessListener {
-                                        isLoading = false
-                                        onNavigateBack() // back to login
-                                    }
-                                    .addOnFailureListener {
-                                        isLoading = false
-                                        errorMessage = it.message
-                                    }
-                            }
-                            .addOnFailureListener {
-                                isLoading = false
-                                errorMessage = it.message
-                            }
-                    }
-                    .addOnFailureListener {
-                        isLoading = false
-                        errorMessage = it.message
-                    }
+                viewModel.register(
+                    onSuccess = onNavigateBack,
+                    errorFillFieldsText = errorFillFieldsText
+                )
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White)
         ) {
-            Text(text = stringResource(id = R.string.signup))
+            Text(stringResource(R.string.signup))
         }
 
-        if (isLoading) {
-            Spacer(modifier = Modifier.height(16.dp))
+        if (viewModel.isLoading) {
             CircularProgressIndicator()
         }
 
-        errorMessage?.let {
-            Spacer(modifier = Modifier.height(16.dp))
+        viewModel.errorMessage?.let {
             Text(text = it, color = Color.Red)
         }
 

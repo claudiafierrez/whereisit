@@ -4,9 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.uoc.whereisitproject.repository.FirebaseAuthRepository
+import com.uoc.whereisitproject.repository.FirebaseUserRepository
 import com.uoc.whereisitproject.screens.BottomNavigationScreen
-import com.uoc.whereisitproject.screens.LoginScreen
+import com.uoc.whereisitproject.screens.login.LoginScreen
 import com.uoc.whereisitproject.screens.RegisterScreen
+import com.uoc.whereisitproject.screens.login.LoginViewModel
+import com.uoc.whereisitproject.screens.register.RegisterViewModel
 
 @Composable
 fun AppNavHost(
@@ -19,7 +26,15 @@ fun AppNavHost(
         startDestination = startDestination
     ) {
         composable("login") {
+
+            val loginViewModel = LoginViewModel(
+                authRepository = FirebaseAuthRepository(
+                    FirebaseAuth.getInstance()
+                )
+            )
+
             LoginScreen(
+                viewModel = loginViewModel,
                 onNavigateToRegister = {
                     rootNavController.navigate("register")
                 },
@@ -32,7 +47,19 @@ fun AppNavHost(
             )
         }
         composable("register") {
+
+            val registerViewModel = RegisterViewModel(
+                authRepository = FirebaseAuthRepository(
+                    FirebaseAuth.getInstance()
+                ),
+                userRepository = FirebaseUserRepository(
+                    firestore = FirebaseFirestore.getInstance(),
+                    storage = FirebaseStorage.getInstance()
+                )
+            )
+
             RegisterScreen(
+                viewModel = registerViewModel,
                 onNavigateBack = { rootNavController.popBackStack() }
             )
         }

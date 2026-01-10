@@ -1,12 +1,11 @@
-package com.uoc.whereisitproject.screens
+package com.uoc.whereisitproject.screens.login
 
-import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,21 +16,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
 import com.uoc.whereisitproject.R
 
 @Composable
-fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
-
-    var email by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf<String?>(null) }
-    var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    val auth = FirebaseAuth.getInstance()
-
-    val invalidEmailText = stringResource(id = R.string.invalid_email_format)
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    onNavigateToRegister: () -> Unit,
+    onLoginSuccess: () -> Unit
+) {
+    val invalidEmailText = stringResource(R.string.invalid_email_format)
 
     Column(
         modifier = Modifier
@@ -40,7 +33,7 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
+
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
@@ -49,24 +42,19 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Input email
         OutlinedTextField(
-            value = email,
+            value = viewModel.email,
             onValueChange = {
-                email = it
-                emailError = if (!Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-                    invalidEmailText
-                } else null
-
+                viewModel.onEmailChange(it, invalidEmailText)
             },
-            label = { Text(text = stringResource(id = R.string.email)) },
+            label = { Text(stringResource(id = R.string.email)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            isError = emailError != null
+            isError = viewModel.emailError != null
         )
 
-        emailError?.let {
+        viewModel.emailError?.let {
             Text(
                 text = it,
                 color = Color.Red,
@@ -77,11 +65,10 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Input password
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(text = stringResource(id = R.string.password)) },
+            value = viewModel.password,
+            onValueChange = viewModel::onPasswordChange,
+            label = { Text(stringResource(id = R.string.password)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
@@ -91,28 +78,18 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = {
-                isLoading = true
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener {
-                        isLoading = false
-                        onLoginSuccess()
-                    }
-                    .addOnFailureListener {
-                        isLoading = false
-                        errorMessage = it.message
-                    }
-            },
+            onClick = { viewModel.login(onLoginSuccess) },
             modifier = Modifier.fillMaxWidth(),
+            enabled = !viewModel.isLoading,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black, // background color
-                contentColor = Color.White // text color
+                containerColor = Color.Black,
+                contentColor = Color.White
             )
         ) {
             Text(text = stringResource(id = R.string.login))
         }
 
-        errorMessage?.let {
+        viewModel.errorMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = it, color = Color.Red)
         }
@@ -125,7 +102,9 @@ fun LoginScreen(onNavigateToRegister: () -> Unit, onLoginSuccess: () -> Unit) {
                 text = stringResource(id = R.string.signup),
                 color = Color.Blue,
                 fontSize = 16.sp,
-                style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    textDecoration = TextDecoration.Underline
+                ),
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
         }
