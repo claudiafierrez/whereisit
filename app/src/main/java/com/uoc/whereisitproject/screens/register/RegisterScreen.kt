@@ -1,4 +1,4 @@
-package com.uoc.whereisitproject.screens
+package com.uoc.whereisitproject.screens.register
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.uoc.whereisitproject.R
-import com.uoc.whereisitproject.screens.register.RegisterViewModel
 
 @Composable
 fun RegisterScreen(

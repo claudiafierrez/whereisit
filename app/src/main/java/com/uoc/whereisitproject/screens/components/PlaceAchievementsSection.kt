@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.uoc.whereisitproject.screens.PlaceAchievements
+import com.uoc.whereisitproject.model.PlaceAchievements
 
 @Composable
 fun PlaceAchievementsSection(pa: PlaceAchievements) {

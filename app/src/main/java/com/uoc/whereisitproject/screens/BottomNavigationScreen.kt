@@ -1,6 +1,7 @@
 package com.uoc.whereisitproject.screens
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -27,15 +28,30 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.uoc.whereisitproject.R
+import com.uoc.whereisitproject.repository.FirebaseFollowRepository
+import com.uoc.whereisitproject.repository.FirebasePlaceSpotRepository
+import com.uoc.whereisitproject.repository.FirebaseSocialRepository
+import com.uoc.whereisitproject.repository.FirebaseUserRepository
+import com.uoc.whereisitproject.screens.achievements.AchievementsScreen
+import com.uoc.whereisitproject.screens.achievements.AchievementsViewModel
+import com.uoc.whereisitproject.screens.social.SocialProfileScreen
+import com.uoc.whereisitproject.screens.social.SocialProfileViewModel
+import com.uoc.whereisitproject.screens.social.SocialScreen
+import com.uoc.whereisitproject.screens.social.SocialViewModel
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun BottomNavigationScreen(
+    currentUserId: String,
     onLoggedOutNavigateToLogin : () -> Unit
 ) {
     val bottomNavController = rememberNavController()
@@ -158,9 +174,33 @@ fun BottomNavigationScreen(
                         onLoggedOut = onLoggedOutNavigateToLogin
                     )
                 }
-                composable("achievements") { AchievementsScreen() }
+                composable("achievements") {
+                    val achievementsViewModel = viewModel {
+                        AchievementsViewModel(
+                            repository = FirebasePlaceSpotRepository(
+                                FirebaseFirestore.getInstance()
+                            ),
+                            currentUserId = currentUserId
+                        )
+                    }
+                    AchievementsScreen(
+                        viewModel = achievementsViewModel
+                    )
+                }
                 composable("social") {
+                    val socialViewModel = viewModel {
+                        SocialViewModel(
+                            socialRepository = FirebaseSocialRepository(
+                                FirebaseFirestore.getInstance()
+                            ),
+                            followRepository = FirebaseFollowRepository(
+                                FirebaseFirestore.getInstance()
+                            ),
+                            currentUserId = currentUserId
+                        )
+                    }
                     SocialScreen(
+                        viewModel = socialViewModel,
                         onUserClick = { userId ->
                             bottomNavController.navigate("profile/$userId")
                         }
@@ -177,7 +217,23 @@ fun BottomNavigationScreen(
                 }
                 composable("profile/{userId}") { backStackEntry ->
                     val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                    val socialProfileViewModel = remember(userId) {
+                        SocialProfileViewModel(
+                            userRepository = FirebaseUserRepository(
+                                firestore = FirebaseFirestore.getInstance(),
+                                storage = FirebaseStorage.getInstance()
+                            ),
+                            followRepository = FirebaseFollowRepository(
+                                firestore = FirebaseFirestore.getInstance()
+                            ),
+                            placeSpotRepository = FirebasePlaceSpotRepository(
+                                firestore = FirebaseFirestore.getInstance()
+                            ),
+                            currentUserId = currentUserId
+                        )
+                    }
                     SocialProfileScreen(
+                        viewModel = socialProfileViewModel,
                         userId = userId,
                         navController = bottomNavController
                     )
@@ -243,7 +299,6 @@ fun BottomNavigationBar(navController: NavHostController) {
                     launchSingleTop = true
                     restoreState = true
                 }
-
             }
         )
     }
