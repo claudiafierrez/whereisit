@@ -163,15 +163,7 @@ fun ListScreen(
                         .get()
                         .addOnSuccessListener { spotsSnap ->
                             spots = spotsSnap.documents.map { d ->
-                                Spot(
-                                    spotId = d.id,
-                                    name = d.getString("name")!!,
-                                    description = d.getString("description")!!,
-                                    location = d.getGeoPoint("location")!!,
-                                    streetViewHeading = d.getLong("streetViewHeading")!!.toInt(),
-                                    streetViewPitch = d.getLong("streetViewPitch")!!.toInt(),
-                                    difficulty = d.getLong("difficulty")!!.toInt()
-                                )
+                                Spot.fromSnapshot(d)
                             }
                             isLoadingSpots = false
                         }

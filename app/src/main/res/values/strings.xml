@@ -25,6 +25,7 @@
     <string name="profile">Profile</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="logout">Log out</string>
+    <string name="data">Data</string>
     <string name="needed_name">The First Name or Last Name cannot be empty.</string>
     <string name="enter_current_password">Enter your current password.</string>
     <string name="enter_new_password">Enter the new password.</string>

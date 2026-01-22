@@ -34,6 +34,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.uoc.whereisitproject.R
@@ -43,6 +44,9 @@ import com.uoc.whereisitproject.repository.FirebaseSocialRepository
 import com.uoc.whereisitproject.repository.FirebaseUserRepository
 import com.uoc.whereisitproject.screens.achievements.AchievementsScreen
 import com.uoc.whereisitproject.screens.achievements.AchievementsViewModel
+import com.uoc.whereisitproject.screens.list.SpotDetailScreen
+import com.uoc.whereisitproject.screens.profile.ProfileScreen
+import com.uoc.whereisitproject.screens.profile.ProfileViewModel
 import com.uoc.whereisitproject.screens.social.SocialProfileScreen
 import com.uoc.whereisitproject.screens.social.SocialProfileViewModel
 import com.uoc.whereisitproject.screens.social.SocialScreen
@@ -51,8 +55,7 @@ import com.uoc.whereisitproject.screens.social.SocialViewModel
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun BottomNavigationScreen(
-    currentUserId: String,
-    onLoggedOutNavigateToLogin : () -> Unit
+    currentUserId: String
 ) {
     val bottomNavController = rememberNavController()
     val context = LocalContext.current
@@ -170,8 +173,18 @@ fun BottomNavigationScreen(
                     )
                 }
                 composable("profile") {
+                    val profileViewModel = viewModel {
+                        ProfileViewModel(
+                            userRepository = FirebaseUserRepository(
+                                firestore = FirebaseFirestore.getInstance(),
+                                storage = FirebaseStorage.getInstance(),
+                                auth = FirebaseAuth.getInstance()
+                            ),
+                            currentUserId = currentUserId
+                        )
+                    }
                     ProfileScreen(
-                        onLoggedOut = onLoggedOutNavigateToLogin
+                        viewModel = profileViewModel
                     )
                 }
                 composable("achievements") {
@@ -221,7 +234,8 @@ fun BottomNavigationScreen(
                         SocialProfileViewModel(
                             userRepository = FirebaseUserRepository(
                                 firestore = FirebaseFirestore.getInstance(),
-                                storage = FirebaseStorage.getInstance()
+                                storage = FirebaseStorage.getInstance(),
+                                auth = FirebaseAuth.getInstance()
                             ),
                             followRepository = FirebaseFollowRepository(
                                 firestore = FirebaseFirestore.getInstance()

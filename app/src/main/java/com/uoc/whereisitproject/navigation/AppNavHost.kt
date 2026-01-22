@@ -1,5 +1,6 @@
 package com.uoc.whereisitproject.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -19,64 +20,11 @@ import com.uoc.whereisitproject.screens.login.LoginScreen
 import com.uoc.whereisitproject.screens.register.RegisterScreen
 import com.uoc.whereisitproject.screens.login.LoginViewModel
 import com.uoc.whereisitproject.screens.register.RegisterViewModel
-/*fun AppNavHost(
-    startDestination: String
-) {
-    val rootNavController = rememberNavController()
 
-    NavHost(
-        navController = rootNavController,
-        startDestination = startDestination
-    ) {
-        composable("login") {
-            val loginViewModel = LoginViewModel(
-                authRepository = FirebaseAuthRepository(
-                    FirebaseAuth.getInstance()
-                )
-            )
-            LoginScreen(
-                viewModel = loginViewModel,
-                onNavigateToRegister = {
-                    rootNavController.navigate("register")
-                },
-                onLoginSuccess = {
-                    rootNavController.navigate("main") {
-                        popUpTo("login") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-        composable("register") {
-            val registerViewModel = RegisterViewModel(
-                authRepository = FirebaseAuthRepository(
-                    FirebaseAuth.getInstance()
-                ),
-                userRepository = FirebaseUserRepository(
-                    firestore = FirebaseFirestore.getInstance(),
-                    storage = FirebaseStorage.getInstance()
-                )
-            )
-            RegisterScreen(
-                viewModel = registerViewModel,
-                onNavigateBack = { rootNavController.popBackStack() }
-            )
-        }
-        composable("main") {
-            BottomNavigationScreen(
-                onLoggedOutNavigateToLogin = {
-                    rootNavController.navigate("login") {
-                        popUpTo("main") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-    }
-}*/
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun AppNavHost() {
-    val rootNavController = rememberNavController()
+    val navController = rememberNavController()
     val auth = FirebaseAuth.getInstance()
 
     var user by remember { mutableStateOf(auth.currentUser) }
@@ -86,61 +34,43 @@ fun AppNavHost() {
             user = it.currentUser
         }
         auth.addAuthStateListener(listener)
-
-        onDispose {
-            auth.removeAuthStateListener(listener)
-        }
+        onDispose { auth.removeAuthStateListener(listener) }
     }
 
-    val startDestination = if (user == null) "login" else "main"
+    if (user == null) {
+        NavHost(navController, startDestination = "login") {
+            composable("login") {
+                val vm = LoginViewModel(FirebaseAuthRepository(auth))
+                LoginScreen(
+                    viewModel = vm,
+                    onNavigateToRegister = { navController.navigate("register") },
+                    onLoginSuccess = {}
+                )
+            }
 
-    NavHost(
-        navController = rootNavController,
-        startDestination = startDestination
-    ) {
-        composable("login") {
-            val loginViewModel = LoginViewModel(
-                authRepository = FirebaseAuthRepository(
-                    FirebaseAuth.getInstance()
+            composable("register") {
+                val vm = RegisterViewModel(
+                    authRepository = FirebaseAuthRepository(auth),
+                    userRepository = FirebaseUserRepository(
+                        FirebaseFirestore.getInstance(),
+                        FirebaseStorage.getInstance(),
+                        auth = FirebaseAuth.getInstance()
+                    )
                 )
-            )
-            LoginScreen(
-                viewModel = loginViewModel,
-                onNavigateToRegister = {
-                    rootNavController.navigate("register")
-                },
-                onLoginSuccess = {
-                    rootNavController.navigate("main") {
-                        popUpTo("login") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
+                RegisterScreen(vm) { navController.popBackStack() }
+            }
         }
-        composable("register") {
-            val registerViewModel = RegisterViewModel(
-                authRepository = FirebaseAuthRepository(
-                    FirebaseAuth.getInstance()
-                ),
-                userRepository = FirebaseUserRepository(
-                    firestore = FirebaseFirestore.getInstance(),
-                    storage = FirebaseStorage.getInstance()
-                )
-            )
-            RegisterScreen(
-                viewModel = registerViewModel,
-                onNavigateBack = { rootNavController.popBackStack() }
-            )
-        }
+
+        return
+    }
+
+    // ONLY if user exists
+    val uid = user!!.uid
+
+    NavHost(navController, startDestination = "main") {
         composable("main") {
             BottomNavigationScreen(
-                currentUserId = user!!.uid,
-                onLoggedOutNavigateToLogin = {
-                    rootNavController.navigate("login") {
-                        popUpTo("main") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
+                currentUserId = uid
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.uoc.whereisitproject.screens
+package com.uoc.whereisitproject.screens.list
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -52,7 +52,6 @@ fun SpotDetailScreen(
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
-
     // Completion status and proximity
     var isCompleted by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -72,15 +71,7 @@ fun SpotDetailScreen(
                 .collection("spots").document(spotId)
                 .get().await()
 
-            spot = Spot(
-                spotId = doc.id,
-                name = doc.getString("name")!!,
-                description = doc.getString("description")!!,
-                location = doc.getGeoPoint("location")!!,
-                streetViewHeading = doc.getLong("streetViewHeading")!!.toInt(),
-                streetViewPitch = doc.getLong("streetViewPitch")!!.toInt(),
-                difficulty = doc.getLong("difficulty")!!.toInt()
-            )
+            spot = Spot.fromSnapshot(doc)
             loading = false
         } catch (e: Exception) {
             error = invalidSpotDataText + " ${e.message}"
@@ -221,7 +212,7 @@ fun SpotDetailScreen(
                             label = { Text(text = stringResource(id = R.string.completed)) },
                             leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) },
 
-                        )
+                            )
                     }
 
                     if (showDialog && !isCompleted) {

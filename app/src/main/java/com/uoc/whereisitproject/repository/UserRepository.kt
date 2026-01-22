@@ -13,4 +13,8 @@ interface UserRepository {
         profileImageUri: Uri
     )
     suspend fun getUserProfile(userId: String): UserProfile
+    suspend fun updateUserNames(userId: String, firstName: String, lastName: String)
+    suspend fun updateProfileImage(userId: String, imageUri: Uri)
+    suspend fun changePassword(currentPassword: String, newPassword: String)
+    fun logout()
 }
